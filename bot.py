@@ -1,5 +1,6 @@
 import random
 from pyrogram import Client, filters
+from pyrogram.enums import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pymongo import MongoClient
 from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, DB_NAME, COLLECTION_NAME, OWNER_LINK, CHANNEL_LINK
@@ -88,7 +89,7 @@ async def start(_, message):
     await message.reply(
         start_text,
         reply_markup=start_buttons,
-        parse_mode="html"
+        parse_mode=ParseMode.HTML
     )
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
