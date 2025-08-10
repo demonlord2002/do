@@ -2,6 +2,21 @@
   "name": "Guess The Emoji Tamil Movie Bot",
   "description": "A fun Telegram group game bot where players guess Tamil movies from emojis.",
   "repository": "https://github.com/demonlord2002/do",
+  "keywords": [
+    "telegram",
+    "bot",
+    "emoji game",
+    "tamil movies",
+    "pyrogram",
+    "heroku",
+    "mongodb",
+    "telegram group game"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
   "env": {
     "API_ID": {
       "description": "Your Telegram API ID from https://my.telegram.org",
@@ -36,9 +51,14 @@
       "value": "https://t.me/YourChannel"
     }
   },
-  "buildpacks": [
-    {
-      "url": "heroku/python"
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "Basic"
     }
-  ]
+  },
+  "addons": [],
+  "scripts": {
+    "postdeploy": "echo 'Bot deployed successfully!'"
+  }
 }
