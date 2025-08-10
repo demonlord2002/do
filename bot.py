@@ -106,6 +106,7 @@ movies = [
     ("🎭👑", "Ponniyin Selvan 3"),                     # Drama + Crown
     ("🧙‍♂️🪄", "Magadheera 2"),                       # Wizard + Magic wand
 
+]
 
 # ==== EMOJI MEANINGS ====
 emojis_meaning = {
