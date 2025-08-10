@@ -13,4 +13,4 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME", "scores")
 
 # ==== LINKS ====
 OWNER_LINK = os.getenv("OWNER_LINK", "https://t.me/TheAnonymous_II")
-CHANNEL_LINK = os.getenv("CHANNEL_LINK", "https://t.me/Cursed_Intelligence")
+CHANNEL_LINK = os.getenv("CHANNEL_LINK", "https://t.me/FallenAngelsNetwork")
