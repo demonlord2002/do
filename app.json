@@ -28,7 +28,7 @@
     },
     "BOT_TOKEN": {
       "description": "Your Telegram bot token from BotFather",
-      "value": ""
+      "value": "7607268654:AAGup94GSmRa3U_SQ604_2XgKOovWsueYsM"
     },
     "MONGO_URI": {
       "description": "Your MongoDB connection URI",
