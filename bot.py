@@ -109,7 +109,7 @@ movies = [
 ]
 
 # ==== EMOJI MEANINGS ====
-emojis_meaning = {
+emoji_meanings = {
     "🐅🔔": "🐅 (Tiger) + 🔔 (Bell): Represents 'Puli' — 'Puli' means tiger, bell here suggests alertness.",
     "🕷️👨": "🕷️ (Spider) + 👨 (Man): Refers to 'Spider-Man', the superhero with spider-like powers.",
     "🐯💪": "🐯 (Tiger) + 💪 (Strong arm): Symbolizes 'Singam' (Lion), representing strength and bravery.",
