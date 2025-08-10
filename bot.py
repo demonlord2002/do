@@ -85,8 +85,11 @@ async def start(_, message):
         "<blockquote>💡 கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇</blockquote>"
     ).format(message.from_user.mention)
 
-    await message.reply(start_text, reply_markup=start_buttons)
-
+    await message.reply(
+        start_text,
+        reply_markup=start_buttons,
+        parse_mode="html"
+    )
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
 async def help_info(_, query):
