@@ -60,6 +60,11 @@ def update_score(user_id: int, name: str):
     )
 
 # ==== COMMAND HANDLERS ====
+BOT_NAME = "˹🌙 ᴀᴢʜᴀɢɪʏᴀ ✘ ᴍᴏᴊɪ˼"  # Change this to your bot's actual name
+
+# Fancy font version of BOT_NAME (you can customize this string)
+fancy_bot_name = f"{BOT_NAME}"
+
 @bot.on_message(filters.command("start"))
 async def start(_, message):
     start_buttons = InlineKeyboardMarkup(
@@ -77,7 +82,7 @@ async def start(_, message):
     mention_md = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
 
     start_text = (
-        "🌷🌙 **❝ Azhagiya Moji ❞** 🌙🌷\n"
+        f"{fancy_bot_name}\n"
         "━━━━━━━━━━━━━━━━━━━━\n"
         f"💗 வணக்கம் {mention_md} 🌟💕\n"
         "🎬 **Tamil Emoji Movie Game**-க்கு உங்களை வரவேற்கிறோம்! 🥳✨\n"
@@ -95,6 +100,7 @@ async def start(_, message):
         reply_markup=start_buttons,
         parse_mode=ParseMode.MARKDOWN
     )
+
 
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
