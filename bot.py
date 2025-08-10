@@ -74,29 +74,27 @@ async def start(_, message):
         ]
     )
 
-    # MarkdownV2 mention format (escapes required)
-    user_name = message.from_user.first_name.replace("_", "\\_").replace("-", "\\-")
-    mention_md = f"[{user_name}](tg://user?id={message.from_user.id})"
+    mention_html = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
 
     start_text = (
-        "> 🌷🌙 *❝ Azhagiya Moji ❞* 🌙🌷\n\n"
-        f"> 💗 வணக்கம் {mention_md} 🌟💕\n\n"
-        "> 🎬 *Tamil Emoji Movie Game*\\-க்கு உங்களை வரவேற்கிறோம்\\! 🥳✨\n"
+        "<blockquote><b>🌷🌙 ❝ Azhagiya Moji ❞ 🌙🌷</b></blockquote>\n\n"
+        f"<blockquote><b>💗 வணக்கம் {mention_html} 🌟💕</b></blockquote>\n\n"
+        "<blockquote><b>🎬 Tamil Emoji Movie Game-க்கு உங்களை வரவேற்கிறோம்! 🥳✨</b></blockquote>\n"
         "✦━─────⌬〔🌌〕⌬─────━✦\n"
-        "> 💡 குழுவில் `/emoji` என டைப் செய்து விளையாட துவங்குங்கள்\\!\n"
-        "> 🏆 உங்கள் புள்ளிகளை பார்க்க: `/myscore`\n"
-        "> ⏭ கேள்வியை தவிர்க்க: `/skip`\n"
-        "> 🛑 விளையாட்டை நிறுத்த: `/end`\n"
+        "<blockquote><b>💡 குழுவில் /emoji என டைப் செய்து விளையாட துவங்குங்கள்!</b></blockquote>\n"
+        "<blockquote><b>🏆 உங்கள் புள்ளிகளை பார்க்க:</b> /myscore</blockquote>\n"
+        "<blockquote><b>⏭ கேள்வியை தவிர்க்க:</b> /skip</blockquote>\n"
+        "<blockquote><b>🛑 விளையாட்டை நிறுத்த:</b> /end</blockquote>\n"
         "✦━─────⌬〔🌌〕⌬─────━✦\n"
-        "> 💡 கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇"
+        "<blockquote>💡 கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇</blockquote>"
     )
 
     await message.reply(
         start_text,
         reply_markup=start_buttons,
-        parse_mode=ParseMode.MARKDOWN_V2
-        
+        parse_mode=ParseMode.HTML
     )
+
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
 async def help_info(_, query):
