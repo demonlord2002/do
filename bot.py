@@ -4,18 +4,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pymongo import MongoClient
 from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, DB_NAME, COLLECTION_NAME, OWNER_LINK, CHANNEL_LINK
 
-
-# ==== BOT CONFIG ====
-API_ID = 12345  # your api_id
-API_HASH = "your_api_hash"
-BOT_TOKEN = "your_bot_token"
-
-# ==== MONGODB CONFIG ====
-MONGO_URI = "mongodb+srv://username:password@cluster0.mongodb.net/?retryWrites=true&w=majority"
-DB_NAME = "emoji_game"
-COLLECTION_NAME = "scores"
-
-# Connect to MongoDB
+# ==== MONGODB CONNECT ====
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client[DB_NAME]
 scores_collection = db[COLLECTION_NAME]
@@ -49,13 +38,14 @@ movies = [
     ("👓💼", "Don"), ("🕶️🔫", "Thunivu"), ("🌅🛕", "Varisu"), ("🏏🎯", "Kanaa")
 ]
 
-# ==== runtime question tracking ====
+# ==== RUNTIME QUESTIONS ====
 active_questions = {}
+ended_games = set()
 
 # ==== BOT INSTANCE ====
 bot = Client("emoji_movie_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# ==== MONGODB FUNCTIONS ====
+# ==== SCORE FUNCTIONS ====
 def get_score(user_id: int) -> int:
     user = scores_collection.find_one({"user_id": user_id})
     return user["score"] if user and "score" in user else 0
@@ -67,12 +57,9 @@ def update_score(user_id: int, name: str):
         upsert=True
     )
 
-# ==== COMMANDS ====
+# ==== COMMAND HANDLERS ====
 @bot.on_message(filters.command("start"))
 async def start(_, message):
-    OWNER_LINK = "https://t.me/YourUsername"
-    CHANNEL_LINK = "https://t.me/YourChannel"
-
     start_buttons = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("👑 Owner", url=OWNER_LINK)],
@@ -80,11 +67,12 @@ async def start(_, message):
             [InlineKeyboardButton("ℹ Help", callback_data="help_info")]
         ]
     )
-
     await message.reply(
         "🎬 வணக்கம்! 'Guess the Emoji - Tamil Movie Game' க்கு வரவேற்கிறோம்!\n\n"
         "குழுவில் /emoji டைப் செய்து விளையாடுங்கள்!\n\n"
-        "🏆 உங்கள் புள்ளிகளை பார்க்க: /myscore\n\n"
+        "🏆 உங்கள் புள்ளிகளை பார்க்க: /myscore\n"
+        "⏭ கேள்வி தவிர்க்க: /skip\n"
+        "🛑 விளையாட்டு நிறுத்த: /end\n\n"
         "கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇",
         reply_markup=start_buttons
     )
@@ -98,8 +86,9 @@ async def help_info(_, query):
         "3️⃣ சரியான பதிலை click செய்யவும்.\n"
         "4️⃣ முதலில் சரியான பதில் சொல்வவருக்கு புள்ளிகள் கிடைக்கும்.\n\n"
         "🏆 `/myscore` – உங்கள் புள்ளிகள் பார்க்க\n"
-        "📌 ஒவ்வொரு கேள்விக்கும் ஒரே முயற்சி மட்டுமே அனுமதி.\n"
-        "🎯 சுறுசுறுப்பாக பதிலளிக்கவும்!"
+        "⏭ `/skip` – தற்போதைய கேள்வி தவிர்க்க\n"
+        "🛑 `/end` – விளையாட்டு நிறுத்த\n"
+        "📌 ஒவ்வொரு கேள்விக்கும் ஒரே முயற்சி மட்டுமே."
     )
     await query.answer()
     await query.message.reply(help_text)
@@ -113,6 +102,11 @@ async def my_score(_, message):
 
 @bot.on_message(filters.command("emoji") & filters.group)
 async def send_emoji_question(_, message):
+    chat_id = message.chat.id
+    if chat_id in ended_games:
+        await message.reply("🛑 விளையாட்டு நிறுத்தப்பட்டுள்ளது. மீண்டும் தொடங்க முடியாது.")
+        return
+
     movie = random.choice(movies)
     correct = movie[1]
     wrong_choices = random.sample([m[1] for m in movies if m[1] != correct], 3)
@@ -125,7 +119,8 @@ async def send_emoji_question(_, message):
         "options": options,
         "correct_index": correct_index,
         "answered": set(),
-        "closed": False
+        "closed": False,
+        "chat_id": chat_id
     }
 
     buttons = [
@@ -137,9 +132,27 @@ async def send_emoji_question(_, message):
         f"🔍 இந்த Emoji எந்த தமிழ் படம்?\n\n{movie[0]}",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
-
     active_questions[qid]["msg_id"] = sent.message_id
-    active_questions[qid]["chat_id"] = sent.chat.id
+
+@bot.on_message(filters.command("skip") & filters.group)
+async def skip_question(_, message):
+    chat_id = message.chat.id
+    for qid, qdata in list(active_questions.items()):
+        if qdata.get("chat_id") == chat_id:
+            correct_text = qdata["options"][qdata["correct_index"]]
+            await message.reply(f"⏭ கேள்வி தவிர்க்கப்பட்டது!\nசரியான பதில்: {correct_text}")
+            active_questions.pop(qid, None)
+            return
+    await message.reply("⏭ தற்போது எதுவும் கேள்வி இல்லை.")
+
+@bot.on_message(filters.command("end") & filters.group)
+async def end_game(_, message):
+    chat_id = message.chat.id
+    ended_games.add(chat_id)
+    for qid, qdata in list(active_questions.items()):
+        if qdata.get("chat_id") == chat_id:
+            active_questions.pop(qid, None)
+    await message.reply("🛑 விளையாட்டு நிறுத்தப்பட்டது!.")
 
 @bot.on_callback_query(filters.regex(r"^ans\|"))
 async def check_answer(_, query):
@@ -155,16 +168,15 @@ async def check_answer(_, query):
     user_name = query.from_user.first_name
 
     if not qdata:
-        await query.answer("This question expired or bot restarted. Use /emoji to start a new one.", show_alert=True)
+        await query.answer("இந்த கேள்வி காலாவதியாகிவிட்டது.", show_alert=True)
         return
 
     if qdata.get("closed", False):
-        await query.answer("This question has already been answered.", show_alert=True)
-        active_questions.pop(qid, None)
+        await query.answer("இந்த கேள்விக்கு பதில் சொல்லப்பட்டுவிட்டது.", show_alert=True)
         return
 
     if user_id in qdata["answered"]:
-        await query.answer("நீங்கள் ஏற்கனவே பதில் சொன்னீர்கள் — மறுபடியும் முயற்சி செய்ய முடியாது.", show_alert=True)
+        await query.answer("நீங்கள் ஏற்கனவே பதில் சொன்னீர்கள்.", show_alert=True)
         return
 
     qdata["answered"].add(user_id)
@@ -178,6 +190,6 @@ async def check_answer(_, query):
         qdata["closed"] = True
         active_questions.pop(qid, None)
     else:
-        await query.answer("❌ தவறு! நன்றி - மீண்டும் முயற்சி செய்ய முடியாது.", show_alert=True)
+        await query.answer("❌ தவறு!", show_alert=True)
 
 bot.run()
