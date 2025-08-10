@@ -39,6 +39,98 @@ movies = [
     ("👓💼", "Don"), ("🕶️🔫", "Thunivu"), ("🌅🛕", "Varisu"), ("🏏🎯", "Kanaa")
 ]
 
+# ==== EMOJI MEANINGS ====
+emoji_meanings = {
+    "🐍🔔": "🐍 (Snake) + 🔔 (Bell): Represents 'Puli' which means Tiger; here snake and bell symbolize danger and alertness, hinting at the fierce nature of the movie.",
+    "🕷️👨": "🕷️ (Spider) + 👨 (Man): Refers to 'Spider-Man', the superhero with spider-like powers.",
+    "🐯💪": "🐯 (Tiger) + 💪 (Strong arm): Symbolizes 'Singam', meaning Lion, representing strength and bravery.",
+    "👑🏰": "👑 (Crown) + 🏰 (Castle): Indicates royalty and kingdom, pointing to the historic epic 'Ponniyin Selvan'.",
+    "🚀🌕": "🚀 (Rocket) + 🌕 (Moon): Refers to 'Tik Tik Tik', a space-themed thriller.",
+    "🌊🐠": "🌊 (Water wave) + 🐠 (Fish): Related to 'Meen Kuzhambum Mann Paanaiyum', which is about fish and water elements.",
+    "🏹🔥": "🏹 (Bow and arrow) + 🔥 (Fire): Symbolizes 'Baahubali', a warrior with bow and fire representing battle and power.",
+    "👻🏠": "👻 (Ghost) + 🏠 (House): Represents the horror movie 'Kanchana' set in a haunted house.",
+    "🛕🦅": "🛕 (Temple) + 🦅 (Eagle): Related to 'Thirupaachi', a movie with rural and temple backdrop and vigilance.",
+    "👩‍🍳🍲": "👩‍🍳 (Chef) + 🍲 (Food): Refers to 'Saivam', which emphasizes family and food traditions.",
+    "🐅🎯": "🐅 (Tiger) + 🎯 (Target): Symbolizes 'Kumki', a movie involving an elephant used to control wild animals (tiger representing wildlife).",
+    "👨‍⚕️💊": "👨‍⚕️ (Doctor) + 💊 (Medicine): Points to 'Mersal', where the lead character is a doctor.",
+    "💣🕵️": "💣 (Bomb) + 🕵️ (Detective): Refers to 'Vivegam', an action-thriller involving espionage and explosions.",
+    "🎭🎤": "🎭 (Drama mask) + 🎤 (Microphone): Indicates 'Kaadhalan', a romantic and musical drama.",
+    "👨‍🚒🔥": "👨‍🚒 (Firefighter) + 🔥 (Fire): Represents 'Theri', an action movie with fiery vengeance.",
+    "🪂🎯": "🪂 (Parachute) + 🎯 (Target): Refers to 'Maanaadu', a political thriller involving tactical operations.",
+    "🛶🏝️": "🛶 (Boat) + 🏝️ (Island): Points to 'Kaadhalum Kadanthu Pogum', a romantic movie with travel themes.",
+    "🎸🎤": "🎸 (Guitar) + 🎤 (Microphone): Refers to 'Rockstar', a musical drama.",
+    "🚔🔫": "🚔 (Police car) + 🔫 (Gun): Symbolizes 'Kaakha Kaakha', a cop action thriller.",
+    "💃🕺": "💃 (Dancer) + 🕺 (Dancer): Represents 'Ok Kanmani', a romantic dance-filled movie.",
+    "🪖🔫": "🪖 (Military helmet) + 🔫 (Gun): Points to 'Theeran Adhigaaram Ondru', a police action movie.",
+    "🦸‍♂️⚡": "🦸‍♂️ (Superhero) + ⚡ (Lightning): Represents 'Minnal Murali', a superhero film.",
+    "🐆🔫": "🐆 (Leopard) + 🔫 (Gun): Refers to 'Kaala', a gangster movie symbolized by the fierce leopard.",
+    "🏍️💨": "🏍️ (Motorcycle) + 💨 (Speed): Points to 'Irumbu Thirai', a fast-paced action thriller.",
+    "🎩🎩": "🎩 (Top hats): Symbolizes 'Gentleman', representing a classy hero.",
+    "🕰️🔄": "🕰️ (Clock) + 🔄 (Repeat): Represents '24', a thriller revolving around time.",
+    "🌋🔥": "🌋 (Volcano) + 🔥 (Fire): Symbolizes 'Sivaji', a fiery and explosive drama.",
+    "👩‍👦❤️": "👩‍👦 (Mother and child) + ❤️ (Love): Points to 'Pasanga', a family drama focusing on children.",
+    "👨‍🌾🌾": "👨‍🌾 (Farmer) + 🌾 (Crop): Represents 'Kadaikutty Singam', a rural farmer-based story.",
+    "👊🩸": "👊 (Fist) + 🩸 (Blood): Symbolizes 'Asuran', a violent revenge drama.",
+    "🎯🎯": "🎯 (Targets): Refers to 'Thuppakki', a thriller involving precision attacks.",
+    "🚖🛣️": "🚖 (Taxi) + 🛣️ (Road): Points to 'Anegan', a romantic movie involving journeys.",
+    "🛶🐟": "🛶 (Boat) + 🐟 (Fish): Represents 'Paruthiveeran', a rural action-drama.",
+    "🧟‍♂️🏃": "🧟‍♂️ (Zombie) + 🏃 (Running): Refers to 'Miruthan', a zombie apocalypse movie.",
+    "🔪👩": "🔪 (Knife) + 👩 (Woman): Points to 'Psycho', a thriller with a female lead and murder mystery.",
+    "💼🏢": "💼 (Briefcase) + 🏢 (Office): Refers to 'Mankatha', a heist thriller.",
+    "🕵️‍♂️🔍": "🕵️‍♂️ (Detective) + 🔍 (Magnifying glass): Symbolizes 'Detective', a mystery thriller.",
+    "👩‍❤️‍👨💔": "👩‍❤️‍👨 (Couple) + 💔 (Broken heart): Points to '96', a romantic drama about lost love.",
+    "💃💔": "💃 (Dancer) + 💔 (Broken heart): Refers to 'Mayakkam Enna', a love story with emotional turmoil.",
+    "🏏🏆": "🏏 (Cricket) + 🏆 (Trophy): Symbolizes 'Chennai 600028', a sports drama.",
+    "🐒🎭": "🐒 (Monkey) + 🎭 (Drama mask): Refers to 'Ko', a political thriller with twists.",
+    "📚🎓": "📚 (Books) + 🎓 (Graduation cap): Points to 'Nanban', a story about friendship and education.",
+    "🚚💨": "🚚 (Truck) + 💨 (Speed): Represents 'Vettai', an action thriller.",
+    "🪂🌪️": "🪂 (Parachute) + 🌪️ (Tornado): Refers to 'Soorarai Pottru', about courage and stormy challenges.",
+    "👩‍👩‍👦": "👩‍👩‍👦 (Family): Represents 'Thanga Meengal', a family emotional drama.",
+    "🕯️🌌": "🕯️ (Candle) + 🌌 (Night sky): Symbolizes 'Engeyum Eppodhum', a romantic drama.",
+    "🎨👩": "🎨 (Paint palette) + 👩 (Woman): Refers to 'Raja Rani', a love story with artistic elements.",
+    "🚀🪐": "🚀 (Rocket) + 🪐 (Planet): Points to 'Indru Netru Naalai', a sci-fi time travel movie.",
+    "🐍🩸": "🐍 (Snake) + 🩸 (Blood): Refers to 'Naan Avanillai', a thriller with betrayal and danger.",
+    "🚤🏖️": "🚤 (Speedboat) + 🏖️ (Beach): Symbolizes 'Billa', an action thriller with style.",
+    "🏞️🐘": "🏞️ (Landscape) + 🐘 (Elephant): Points to 'Aaranya Kaandam', a gangster movie set in urban wilds.",
+    "🛕🙏": "🛕 (Temple) + 🙏 (Prayer): Represents 'Kovil', a devotional drama.",
+    "👮🔫": "👮 (Police) + 🔫 (Gun): Refers to 'Saamy', a police action movie.",
+    "💔🎼": "💔 (Broken heart) + 🎼 (Music): Symbolizes 'Vinnaithaandi Varuvaayaa', a romantic musical.",
+    "🚂🏞️": "🚂 (Train) + 🏞️ (Scenery): Points to 'Pariyerum Perumal', a social drama.",
+    "🎤🎧": "🎤 (Mic) + 🎧 (Headphones): Refers to 'Sarvam Thaala Mayam', about music and passion.",
+    "🐎🏹": "🐎 (Horse) + 🏹 (Bow and arrow): Represents 'Kaavalan', a romantic action movie.",
+    "👩‍🏫📚": "👩‍🏫 (Teacher) + 📚 (Books): Symbolizes 'Kandukondain Kandukondain', a romantic drama with education themes.",
+    "🍫🍭": "🍫 (Chocolate) + 🍭 (Candy): Refers to 'Chocklet', a romantic drama.",
+    "🩸🏛️": "🩸 (Blood) + 🏛️ (Court): Points to 'Raatchasan', a thriller about a serial killer and investigation.",
+    "🏖️🌴": "🏖️ (Beach) + 🌴 (Palm tree): Represents 'Sura', a fishing village action movie.",
+    "🐷🎯": "🐷 (Pig) + 🎯 (Target): Refers to 'Oru Oorla Rendu Raja', a comedy-action movie.",
+    "🎤🎸": "🎤 (Mic) + 🎸 (Guitar): Symbolizes 'Petta', a mass entertainer with style and music.",
+    "🛣️🚙": "🛣️ (Road) + 🚙 (Car): Points to 'Kadhalar Dhinam', a romantic movie.",
+    "🏛️⚖️": "🏛️ (Court) + ⚖️ (Justice scale): Represents 'Jai Bhim', a courtroom drama about justice.",
+    "🏥🩺": "🏥 (Hospital) + 🩺 (Stethoscope): Refers to 'Doctor', an action comedy with a doctor hero.",
+    "🌌🚀": "🌌 (Galaxy) + 🚀 (Rocket): Symbolizes 'Enthiran', a sci-fi robot movie.",
+    "🪖🇮🇳": "🪖 (Soldier helmet) + 🇮🇳 (India flag): Points to 'Indian', a patriotic action movie.",
+    "🧑‍🚀🪐": "🧑‍🚀 (Astronaut) + 🪐 (Planet): Represents 'Manithan', a social drama.",
+    "🎭🕴️": "🎭 (Drama mask) + 🕴️ (Man walking): Refers to 'Aalavandhan', a psychological thriller.",
+    "🌊🚤": "🌊 (Water wave) + 🚤 (Speedboat): Points to 'Anniyan', a thriller with multiple personalities.",
+    "💼🧠": "💼 (Briefcase) + 🧠 (Brain): Symbolizes 'Ratsasan', a serial killer thriller.",
+    "🧙‍♂️🔮": "🧙‍♂️ (Wizard) + 🔮 (Crystal ball): Refers to 'Magadheera', a reincarnation fantasy epic.",
+    "🚘🛣️": "🚘 (Car) + 🛣️ (Road): Represents 'Saivam', a family drama about journeys.",
+    "🦁👑": "🦁 (Lion) + 👑 (Crown): Refers to 'The Lion King', a classic animated movie (Tamil dub).",
+    "🦜🌴": "🦜 (Parrot) + 🌴 (Palm tree): Points to 'Kaakha Kaakha 2', a sequel to the cop movie.",
+    "🐦🎤": "🐦 (Bird) + 🎤 (Mic): Refers to 'Papanasam', a thriller about a family man.",
+    "🚢🌊": "🚢 (Ship) + 🌊 (Water wave): Represents 'Kadhalan 2', a romantic movie sequel.",
+    "🐍💀": "🐍 (Snake) + 💀 (Skull): Points to 'Neelam', a thriller/horror movie.",
+    "🏹🗡️": "🏹 (Bow and arrow) + 🗡️ (Sword): Symbolizes 'Vikram', an action thriller.",
+    "🚓🚨": "🚓 (Police car) + 🚨 (Siren): Refers to 'Beast', an action movie.",
+    "🪆🎯": "🪆 (Russian doll) + 🎯 (Target): Points to 'Master', a mass entertainer.",
+    "🎤🎧": "🎤 (Mic) + 🎧 (Headphones): Symbolizes 'Bigil', a sports and music drama.",
+    "👓💼": "👓 (Glasses) + 💼 (Briefcase): Refers to 'Don', a stylish action movie.",
+    "🕶️🔫": "🕶️ (Sunglasses) + 🔫 (Gun): Points to 'Thunivu', a heist action thriller.",
+    "🌅🛕": "🌅 (Sunrise) + 🛕 (Temple): Represents 'Varisu', a family drama.",
+    "🏏🎯": "🏏 (Cricket) + 🎯 (Target): Refers to 'Kanaa', a sports drama about cricket."
+}
+
+
 # ==== RUNTIME QUESTIONS ====
 active_questions = {}
 ended_games = set()
@@ -129,10 +221,8 @@ async def send_emoji_question(_, message):
     movie = random.choice(movies)
     correct = movie[1]
 
-    # Harder clue: show only one emoji from the emoji clue string
-    emoji_str = movie[0]
-    emoji_list = emoji_str.split()
-    emoji_clue = random.choice(emoji_list) if emoji_list else emoji_str[0]
+    # Show the full emoji clue (not partial)
+    emoji_clue = movie[0]
 
     # Wrong choices with same first letter if possible
     same_first_letter_movies = [m[1] for m in movies if m[1] != correct and m[1][0].lower() == correct[0].lower()]
@@ -152,7 +242,8 @@ async def send_emoji_question(_, message):
         "answered": set(),
         "closed": False,
         "chat_id": chat_id,
-        "first_attempt_done": set()
+        "emoji_clue": emoji_clue,
+        "correct_answer": correct
     }
 
     buttons = [
@@ -172,7 +263,9 @@ async def skip_question(_, message):
     for qid, qdata in list(active_questions.items()):
         if qdata.get("chat_id") == chat_id:
             correct_text = qdata["options"][qdata["correct_index"]]
-            await message.reply(f"⏭ கேள்வி தவிர்க்கப்பட்டது!\nசரியான பதில்: {correct_text}")
+            emoji_clue = qdata.get("emoji_clue", "")
+            explanation = emoji_meanings.get(emoji_clue, "Sorry, no explanation available for this emoji clue.")
+            await message.reply(f"⏭ கேள்வி தவிர்க்கப்பட்டது!\nசரியான பதில்: {correct_text}\n\n📖 விளக்கம்:\n{explanation}")
             active_questions.pop(qid, None)
             return
     await message.reply("⏭ தற்போது எதுவும் கேள்வி இல்லை.")
@@ -207,19 +300,21 @@ async def check_answer(_, query):
         await query.answer("இந்த கேள்விக்கு பதில் சொல்லப்பட்டுவிட்டது.", show_alert=True)
         return
 
-    # Only one attempt per user per question
-    if user_id in qdata["first_attempt_done"]:
-        await query.answer("நீங்கள் ஏற்கனவே ஒரு முறை முயற்சி செய்துள்ளீர்கள்.", show_alert=True)
+    if user_id in qdata.get("answered", set()):
+        await query.answer("நீங்கள் ஏற்கனவே பதில் சொன்னீர்கள்.", show_alert=True)
         return
 
-    qdata["first_attempt_done"].add(user_id)
+    qdata["answered"].add(user_id)
 
     if idx == qdata["correct_index"]:
         update_score(user_id, user_name)
         points = get_score(user_id)
         await query.answer(f"✅ சரி! {user_name}க்கு {points} புள்ளிகள்", show_alert=True)
         correct_text = qdata["options"][qdata["correct_index"]]
-        await query.message.edit_text(f"🏆 {user_name} சரியாக கண்டுபிடித்தார்!\nசரியான பதில்: {correct_text}")
+        explanation = emoji_meanings.get(qdata.get("emoji_clue", ""), "விளக்கம் கிடைக்கவில்லை.")
+        await query.message.edit_text(
+            f"🏆 {user_name} சரியாக கண்டுபிடித்தார்!\nசரியான பதில்: {correct_text}\n\n📖 விளக்கம்:\n{explanation}"
+        )
         qdata["closed"] = True
         active_questions.pop(qid, None)
     else:
