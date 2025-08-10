@@ -62,16 +62,20 @@ def update_score(user_id: int, name: str):
 async def start(_, message):
     start_buttons = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("👑 Owner", url=OWNER_LINK)],
-            [InlineKeyboardButton("📢 Update", url=CHANNEL_LINK)],
-            [InlineKeyboardButton("ℹ Help", callback_data="help_info")]
+            [
+                InlineKeyboardButton("🌸 Owner", url=OWNER_LINK),
+                InlineKeyboardButton("📢 Updates", url=CHANNEL_LINK)
+            ],
+            [
+                InlineKeyboardButton("💖 Help", callback_data="help_info")
+            ]
         ]
     )
 
     start_text = (
-        "<blockquote><b>🌸🌙 ❝ Azhagiya Moji ❞ 🌙🌸</b></blockquote>\n\n"
-        "<blockquote><b>💗 வணக்கம் {0} 😍✨</b></blockquote>\n\n"
-        "<blockquote><b>🎬 Tamil Emoji Movie Game-க்கு வரவேற்கிறோம்! 🥳</b></blockquote>\n"
+        "<blockquote><b>🌷🌙 ❝ Azhagiya Moji ❞ 🌙🌷</b></blockquote>\n\n"
+        "<blockquote><b>💗 வணக்கம் {0} 🌟💕</b></blockquote>\n\n"
+        "<blockquote><b>🎬 Tamil Emoji Movie Game-க்கு உங்களை வரவேற்கிறோம்! 🥳✨</b></blockquote>\n"
         "✦━─────⌬〔🌌〕⌬─────━✦\n"
         "<blockquote><b>💡 குழுவில் /emoji என டைப் செய்து விளையாட துவங்குங்கள்!</b></blockquote>\n"
         "<blockquote><b>🏆 உங்கள் புள்ளிகளை பார்க்க:</b> /myscore</blockquote>\n"
