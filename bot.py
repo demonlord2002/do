@@ -95,6 +95,7 @@ async def start(_, message):
         start_text,
         reply_markup=start_buttons,
         parse_mode="MarkdownV2"
+
         
     )
 
