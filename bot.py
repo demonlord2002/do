@@ -74,6 +74,7 @@ async def start(_, message):
         ]
     )
 
+    # HTML mention format (works in your Pyrogram)
     mention_html = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
 
     start_text = (
@@ -94,7 +95,6 @@ async def start(_, message):
         reply_markup=start_buttons,
         parse_mode=ParseMode.HTML
     )
-
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
 async def help_info(_, query):
