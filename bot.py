@@ -1,6 +1,7 @@
 import random
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
+from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pymongo import MongoClient
 from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, DB_NAME, COLLECTION_NAME, OWNER_LINK, CHANNEL_LINK
@@ -74,23 +75,24 @@ async def start(_, message):
     )
 
     start_text = (
-        "<blockquote><b>🌷🌙 ❝ Azhagiya Moji ❞ 🌙🌷</b></blockquote>\n\n"
-        "<blockquote><b>💗 வணக்கம் {0} 🌟💕</b></blockquote>\n\n"
-        "<blockquote><b>🎬 Tamil Emoji Movie Game-க்கு உங்களை வரவேற்கிறோம்! 🥳✨</b></blockquote>\n"
+        "> 🌷🌙 *❝ Azhagiya Moji ❞* 🌙🌷\n\n"
+        "> 💗 வணக்கம் {0} 🌟💕\n\n"
+        "> 🎬 *Tamil Emoji Movie Game*\-க்கு உங்களை வரவேற்கிறோம்\! 🥳✨\n"
         "✦━─────⌬〔🌌〕⌬─────━✦\n"
-        "<blockquote><b>💡 குழுவில் /emoji என டைப் செய்து விளையாட துவங்குங்கள்!</b></blockquote>\n"
-        "<blockquote><b>🏆 உங்கள் புள்ளிகளை பார்க்க:</b> /myscore</blockquote>\n"
-        "<blockquote><b>⏭ கேள்வியை தவிர்க்க:</b> /skip</blockquote>\n"
-        "<blockquote><b>🛑 விளையாட்டை நிறுத்த:</b> /end</blockquote>\n"
+        "> 💡 குழுவில் `/emoji` என டைப் செய்து விளையாட துவங்குங்கள்\!\n"
+        "> 🏆 உங்கள் புள்ளிகளை பார்க்க: `/myscore`\n"
+        "> ⏭ கேள்வியை தவிர்க்க: `/skip`\n"
+        "> 🛑 விளையாட்டை நிறுத்த: `/end`\n"
         "✦━─────⌬〔🌌〕⌬─────━✦\n"
-        "<blockquote>💡 கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇</blockquote>"
+        "> 💡 கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇"
     ).format(message.from_user.mention)
 
     await message.reply(
         start_text,
         reply_markup=start_buttons,
-        parse_mode=ParseMode.HTML
+        parse_mode=ParseMode.MARKDOWN_V2
     )
+
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
 async def help_info(_, query):
