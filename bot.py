@@ -1,7 +1,6 @@
 import random
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pymongo import MongoClient
 from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, DB_NAME, COLLECTION_NAME, OWNER_LINK, CHANNEL_LINK
@@ -60,9 +59,8 @@ def update_score(user_id: int, name: str):
     )
 
 # ==== COMMAND HANDLERS ====
-BOT_NAME = "˹🌙 ᴀᴢʜᴀɢɪʏᴀ ✘ ᴍᴏᴊɪ˼"  # Change this to your bot's actual name
+BOT_NAME = "˹🌙 ᴀᴢʜᴀɢɪʏᴀ ✘ ᴍᴏᴊɪ˼"
 
-# Fancy font version of BOT_NAME (you can customize this string)
 fancy_bot_name = f"{BOT_NAME}"
 
 @bot.on_message(filters.command("start"))
@@ -78,9 +76,7 @@ async def start(_, message):
             ]
         ]
     )
-
     mention_md = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
-
     start_text = (
         f"{fancy_bot_name}\n"
         "━━━━━━━━━━━━━━━━━━━━\n"
@@ -94,14 +90,11 @@ async def start(_, message):
         "━━━━━━━━━━━━━━━━━━━━\n"
         "💡 கீழே உள்ள பட்டன்களை பயன்படுத்தவும் ⬇"
     )
-
     await message.reply(
         start_text,
         reply_markup=start_buttons,
         parse_mode=ParseMode.MARKDOWN
     )
-
-
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
 async def help_info(_, query):
@@ -135,7 +128,19 @@ async def send_emoji_question(_, message):
 
     movie = random.choice(movies)
     correct = movie[1]
-    wrong_choices = random.sample([m[1] for m in movies if m[1] != correct], 3)
+
+    # Harder clue: show only one emoji from the emoji clue string
+    emoji_str = movie[0]
+    emoji_list = emoji_str.split()
+    emoji_clue = random.choice(emoji_list) if emoji_list else emoji_str[0]
+
+    # Wrong choices with same first letter if possible
+    same_first_letter_movies = [m[1] for m in movies if m[1] != correct and m[1][0].lower() == correct[0].lower()]
+    if len(same_first_letter_movies) < 3:
+        wrong_choices = random.sample([m[1] for m in movies if m[1] != correct], 3)
+    else:
+        wrong_choices = random.sample(same_first_letter_movies, 3)
+
     options = wrong_choices + [correct]
     random.shuffle(options)
     correct_index = options.index(correct)
@@ -146,7 +151,8 @@ async def send_emoji_question(_, message):
         "correct_index": correct_index,
         "answered": set(),
         "closed": False,
-        "chat_id": chat_id
+        "chat_id": chat_id,
+        "first_attempt_done": set()
     }
 
     buttons = [
@@ -155,7 +161,7 @@ async def send_emoji_question(_, message):
     ]
 
     sent = await message.reply(
-        f"🔍 இந்த Emoji எந்த தமிழ் படம்?\n\n{movie[0]}",
+        f"🔍 இந்த Emoji எந்த தமிழ் படம்?\n\n{emoji_clue}",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
     active_questions[qid]["msg_id"] = sent.message_id
@@ -201,11 +207,12 @@ async def check_answer(_, query):
         await query.answer("இந்த கேள்விக்கு பதில் சொல்லப்பட்டுவிட்டது.", show_alert=True)
         return
 
-    if user_id in qdata["answered"]:
-        await query.answer("நீங்கள் ஏற்கனவே பதில் சொன்னீர்கள்.", show_alert=True)
+    # Only one attempt per user per question
+    if user_id in qdata["first_attempt_done"]:
+        await query.answer("நீங்கள் ஏற்கனவே ஒரு முறை முயற்சி செய்துள்ளீர்கள்.", show_alert=True)
         return
 
-    qdata["answered"].add(user_id)
+    qdata["first_attempt_done"].add(user_id)
 
     if idx == qdata["correct_index"]:
         update_score(user_id, user_name)
