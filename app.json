@@ -20,11 +20,11 @@
   "env": {
     "API_ID": {
       "description": "Your Telegram API ID from https://my.telegram.org",
-      "value": ""
+      "value": "23559126"
     },
     "API_HASH": {
       "description": "Your Telegram API Hash from https://my.telegram.org",
-      "value": ""
+      "value": "58347a441c011b1b9ee3367ea936dcc4"
     },
     "BOT_TOKEN": {
       "description": "Your Telegram bot token from BotFather",
@@ -32,7 +32,7 @@
     },
     "MONGO_URI": {
       "description": "Your MongoDB connection URI",
-      "value": ""
+      "value": "mongodb+srv://drdoom2003p:drdoom2003p@cluster0.fnhjrtn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     },
     "DB_NAME": {
       "description": "MongoDB Database name",
@@ -44,11 +44,11 @@
     },
     "OWNER_LINK": {
       "description": "Link to your Telegram profile",
-      "value": "https://t.me/YourUsername"
+      "value": "https://t.me/SunsetOfMe"
     },
     "CHANNEL_LINK": {
       "description": "Link to your Telegram channel for updates",
-      "value": "https://t.me/YourChannel"
+      "value": "https://t.me/Cursed_Intelligence"
     }
   },
   "formation": {
