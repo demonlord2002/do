@@ -74,8 +74,9 @@ async def start(_, message):
         ]
     )
 
-    # MarkdownV2 mention format
-    mention_md = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+    # MarkdownV2 mention format (escapes required)
+    user_name = message.from_user.first_name.replace("_", "\\_").replace("-", "\\-")
+    mention_md = f"[{user_name}](tg://user?id={message.from_user.id})"
 
     start_text = (
         "> 🌷🌙 *❝ Azhagiya Moji ❞* 🌙🌷\n\n"
@@ -93,9 +94,8 @@ async def start(_, message):
     await message.reply(
         start_text,
         reply_markup=start_buttons,
-        parse_mode=ParseMode.MARKDOWN
+        parse_mode=ParseMode.MARKDOWN_V2
     )
-
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
 async def help_info(_, query):
