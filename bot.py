@@ -12,7 +12,7 @@ db = mongo_client[DB_NAME]
 scores_collection = db[COLLECTION_NAME]
 
 # ==== MOVIE DATA ====
-# --- Movie & Emoji data ---
+# You need to fill your movies and emoji_meanings dict here
 movies = [
     ("🐯🔥", "Puli"),  # Tiger + Fire — symbolizing 'Puli' (Tiger)
     ("🕷️👨", "Spider-Man: No Way Home (Tamil Dub)"),
@@ -192,6 +192,7 @@ emoji_meanings = {
     "🌅🛕": "Sunrise + Temple: 'Varisu', family drama.",
     "🏏🎯": "Cricket + Target: 'Kanaa', sports drama."
 }
+
 # ==== RUNTIME QUESTIONS ====
 active_questions = {}
 ended_games = set()
@@ -286,7 +287,6 @@ async def send_emoji_question(_, message):
         await message.reply("🛑 விளையாட்டு நிறுத்தப்பட்டுள்ளது. மீண்டும் தொடங்க முடியாது.")
         return
 
-    # Optional: Check if a question is already active for this chat to avoid flooding
     async with lock:
         for qid, qdata in active_questions.items():
             if qdata.get("chat_id") == chat_id and not qdata.get("closed", False):
@@ -328,7 +328,7 @@ async def send_emoji_question(_, message):
         reply_markup=InlineKeyboardMarkup(buttons)
     )
     async with lock:
-        active_questions[qid]["msg_id"] = sent.message_id
+        active_questions[qid]["msg_id"] = sent.id  # <-- FIXED here: use .id instead of .message_id
 
 @bot.on_message(filters.command("skip") & filters.group)
 async def skip_question(_, message):
