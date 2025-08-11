@@ -228,7 +228,7 @@ async def start(_, message):
     start_buttons = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("🌸 Owner", url="https://t.me/TheAnonymous_II"),,
+                InlineKeyboardButton("🌸 Owner", url="https://t.me/TheAnonymous_II"),
                 InlineKeyboardButton("📢 Updates", url=CHANNEL_LINK)
             ],
             [
