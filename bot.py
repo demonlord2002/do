@@ -206,8 +206,6 @@ emoji_meanings = {
     "🏏🎯": "Cricket + Target: 'Kanaa', sports drama."
 }
 
-
-
 # --- Runtime data ---
 active_questions: Dict[str, Dict[str, Any]] = {}
 ended_games = set()
@@ -307,7 +305,8 @@ async def my_score(_, message):
     points = get_score(user_id)
     await message.reply(f"🏆 {name}, உங்கள் புள்ளிகள்: {points}")
 
-@bot.on_message(filters.command("emoji") & filters.chat_type.groups)
+# UPDATED HERE: filters.group instead of filters.chat_type.groups
+@bot.on_message(filters.command("emoji") & filters.group)
 async def send_emoji_question(_, message):
     chat_id = message.chat.id
     if chat_id in ended_games:
@@ -351,7 +350,8 @@ async def send_emoji_question(_, message):
     )
     active_questions[qid]["msg_id"] = sent.message_id
 
-@bot.on_message(filters.command("skip") & filters.chat_type.groups)
+# UPDATED HERE: filters.group instead of filters.chat_type.groups
+@bot.on_message(filters.command("skip") & filters.group)
 async def skip_question(_, message):
     chat_id = message.chat.id
     found = False
@@ -371,7 +371,8 @@ async def skip_question(_, message):
     if not found:
         await message.reply("⏭ தற்போது எதுவும் கேள்வி இல்லை.")
 
-@bot.on_message(filters.command("end") & filters.chat_type.groups)
+# UPDATED HERE: filters.group instead of filters.chat_type.groups
+@bot.on_message(filters.command("end") & filters.group)
 async def end_game(_, message):
     chat_id = message.chat.id
     if chat_id in ended_games:
@@ -432,8 +433,10 @@ async def check_answer(_, query: CallbackQuery):
     else:
         await query.answer("❌ தவறு!", show_alert=True)
 
-# Optional admin restart command to clear ended games
-@bot.on_message(filters.command("restart") & filters.user(OWNER_LINK.split("tg://user?id=")[-1]))
+# Fixed: OWNER_LINK is a URL, extract user id and convert to int for filter.user()
+owner_user_id = int(OWNER_LINK.split("tg://user?id=")[-1])
+
+@bot.on_message(filters.command("restart") & filters.user(owner_user_id))
 async def restart_game(_, message):
     ended_games.clear()
     active_questions.clear()
