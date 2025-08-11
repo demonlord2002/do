@@ -8,7 +8,7 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from config import (
     API_ID, API_HASH, BOT_TOKEN, MONGO_URI,
-    DB_NAME, COLLECTION_NAME, OWNER_LINK,
+    DB_NAME, COLLECTION_NAME,
     CHANNEL_LINK, OWNER_USER_ID
 )
 
