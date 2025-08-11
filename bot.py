@@ -1,34 +1,17 @@
 import random
-import logging
-from typing import Dict, Any
+import asyncio
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pymongo import MongoClient
-from pymongo.errors import PyMongoError
-from config import (
-    API_ID, API_HASH, BOT_TOKEN, MONGO_URI,
-    DB_NAME, COLLECTION_NAME,
-    CHANNEL_LINK, OWNER_USER_ID
-)
+from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, DB_NAME, COLLECTION_NAME, OWNER_USER_ID, CHANNEL_LINK
 
-# --- Setup logging ---
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+# ==== MONGODB CONNECT ====
+mongo_client = MongoClient(MONGO_URI)
+db = mongo_client[DB_NAME]
+scores_collection = db[COLLECTION_NAME]
 
-# --- MongoDB Connection ---
-try:
-    mongo_client = MongoClient(MONGO_URI)
-    db = mongo_client[DB_NAME]
-    scores_collection = db[COLLECTION_NAME]
-    logger.info("MongoDB connected successfully.")
-except PyMongoError as e:
-    logger.error(f"MongoDB connection failed: {e}")
-    scores_collection = None
-
+# ==== MOVIE DATA ====
 # --- Movie & Emoji data ---
 movies = [
     ("🐯🔥", "Puli"),  # Tiger + Fire — symbolizing 'Puli' (Tiger)
@@ -209,36 +192,34 @@ emoji_meanings = {
     "🌅🛕": "Sunrise + Temple: 'Varisu', family drama.",
     "🏏🎯": "Cricket + Target: 'Kanaa', sports drama."
 }
-
-
-# --- Runtime data ---
-active_questions: Dict[str, Dict[str, Any]] = {}
+# ==== RUNTIME QUESTIONS ====
+active_questions = {}
 ended_games = set()
+lock = asyncio.Lock()  # To prevent race conditions on active_questions
 
-# --- Pyrogram bot instance ---
+# ==== BOT INSTANCE ====
 bot = Client("emoji_movie_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# --- Score functions ---
+# ==== SCORE FUNCTIONS ====
 def get_score(user_id: int) -> int:
-    if not scores_collection:
+    try:
+        user = scores_collection.find_one({"user_id": user_id})
+        return user["score"] if user and "score" in user else 0
+    except Exception as e:
+        print(f"MongoDB get_score error: {e}")
         return 0
-    user = scores_collection.find_one({"user_id": user_id})
-    return user.get("score", 0) if user else 0
 
-def update_score(user_id: int, name: str) -> None:
-    if not scores_collection:
-        return
+def update_score(user_id: int, name: str):
     try:
         scores_collection.update_one(
             {"user_id": user_id},
             {"$inc": {"score": 1}, "$set": {"name": name}},
             upsert=True
         )
-    except PyMongoError as e:
-        logger.error(f"Failed to update score for {user_id}: {e}")
+    except Exception as e:
+        print(f"MongoDB update_score error: {e}")
 
-# --- Commands ---
-
+# ==== COMMAND HANDLERS ====
 BOT_NAME = "˹🌙 ᴀᴢʜᴀɢɪʏᴀ ✘ ᴍᴏᴊɪ˼"
 fancy_bot_name = f"{BOT_NAME}"
 
@@ -247,7 +228,7 @@ async def start(_, message):
     start_buttons = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("🌸 Owner", url="https://t.me/TheAnonymous_II"),
+                InlineKeyboardButton("🌸 Owner", url="https://t.me/TheAnonymous_II"),,
                 InlineKeyboardButton("📢 Updates", url=CHANNEL_LINK)
             ],
             [
@@ -276,7 +257,7 @@ async def start(_, message):
     )
 
 @bot.on_callback_query(filters.regex(r"^help_info$"))
-async def help_info(_, query: CallbackQuery):
+async def help_info(_, query):
     help_text = (
         "ℹ **விளையாடும் வழிமுறை:**\n\n"
         "1️⃣ குழுவில் `/emoji` type செய்யவும்.\n"
@@ -290,18 +271,6 @@ async def help_info(_, query: CallbackQuery):
     )
     await query.answer()
     await query.message.reply(help_text)
-
-@bot.on_message(filters.command("help"))
-async def help_command(_, message):
-    await message.reply(
-        "👋 Welcome to Tamil Emoji Movie Game!\n\n"
-        "Use these commands:\n"
-        "/emoji - Start a new emoji question\n"
-        "/myscore - Show your current score\n"
-        "/skip - Skip current question\n"
-        "/end - End the game in this group\n"
-        "Tap the buttons or use commands as shown."
-    )
 
 @bot.on_message(filters.command("myscore"))
 async def my_score(_, message):
@@ -317,36 +286,37 @@ async def send_emoji_question(_, message):
         await message.reply("🛑 விளையாட்டு நிறுத்தப்பட்டுள்ளது. மீண்டும் தொடங்க முடியாது.")
         return
 
-    movie = random.choice(movies)
-    correct = movie[1]
-    emoji_clue = movie[0]
+    # Optional: Check if a question is already active for this chat to avoid flooding
+    async with lock:
+        for qid, qdata in active_questions.items():
+            if qdata.get("chat_id") == chat_id and not qdata.get("closed", False):
+                await message.reply("❗ ஏற்கனவே ஒரு கேள்வி உள்ளது. தயவு செய்து பதில் சொல்லுங்கள் அல்லது /skip செய்யுங்கள்.")
+                return
 
-    # Get wrong choices with same first letter or fallback
-    same_first_letter_movies = [m[1] for m in movies if m[1] != correct and m[1][0].lower() == correct[0].lower()]
-    if len(same_first_letter_movies) < 3:
-        wrong_choices = random.sample([m[1] for m in movies if m[1] != correct], 3)
-    else:
-        wrong_choices = random.sample(same_first_letter_movies, 3)
+        movie = random.choice(movies)
+        correct = movie[1]
+        emoji_clue = movie[0]
 
-    options = wrong_choices + [correct]
-    random.shuffle(options)
-    correct_index = options.index(correct)
+        same_first_letter_movies = [m[1] for m in movies if m[1] != correct and m[1][0].lower() == correct[0].lower()]
+        if len(same_first_letter_movies) < 3:
+            wrong_choices = random.sample([m[1] for m in movies if m[1] != correct], 3)
+        else:
+            wrong_choices = random.sample(same_first_letter_movies, 3)
 
-    # Ensure unique question id
-    while True:
+        options = wrong_choices + [correct]
+        random.shuffle(options)
+        correct_index = options.index(correct)
+
         qid = str(random.randint(100000, 999999))
-        if qid not in active_questions:
-            break
-
-    active_questions[qid] = {
-        "options": options,
-        "correct_index": correct_index,
-        "answered": set(),
-        "closed": False,
-        "chat_id": chat_id,
-        "emoji_clue": emoji_clue,
-        "correct_answer": correct
-    }
+        active_questions[qid] = {
+            "options": options,
+            "correct_index": correct_index,
+            "answered": set(),
+            "closed": False,
+            "chat_id": chat_id,
+            "emoji_clue": emoji_clue,
+            "correct_answer": correct
+        }
 
     buttons = [
         [InlineKeyboardButton(opt, callback_data=f"ans|{qid}|{i}")]
@@ -357,95 +327,80 @@ async def send_emoji_question(_, message):
         f"🔍 இந்த Emoji எந்த தமிழ் படம்?\n\n{emoji_clue}",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
-    active_questions[qid]["msg_id"] = sent.message_id
+    async with lock:
+        active_questions[qid]["msg_id"] = sent.message_id
 
 @bot.on_message(filters.command("skip") & filters.group)
 async def skip_question(_, message):
     chat_id = message.chat.id
-    found = False
-    for qid, qdata in list(active_questions.items()):
-        if qdata.get("chat_id") == chat_id:
-            correct_text = qdata["options"][qdata["correct_index"]]
-            emoji_clue = qdata.get("emoji_clue", "")
-            explanation = emoji_meanings.get(emoji_clue, "மன்னிக்கவும், இந்த Emoji விளக்கம் கிடைக்கவில்லை.")
-            await message.reply(
-                f"⏭ கேள்வி தவிர்க்கப்பட்டது!\n"
-                f"சரியான பதில்: {correct_text}\n\n"
-                f"📖 விளக்கம்:\n{explanation}"
-            )
-            active_questions.pop(qid, None)
-            found = True
-            break
-    if not found:
-        await message.reply("⏭ தற்போது எதுவும் கேள்வி இல்லை.")
+    async with lock:
+        for qid, qdata in list(active_questions.items()):
+            if qdata.get("chat_id") == chat_id:
+                correct_text = qdata["options"][qdata["correct_index"]]
+                emoji_clue = qdata.get("emoji_clue", "")
+                explanation = emoji_meanings.get(emoji_clue, "Sorry, no explanation available for this emoji clue.")
+                await message.reply(f"⏭ கேள்வி தவிர்க்கப்பட்டது!\nசரியான பதில்: {correct_text}\n\n📖 விளக்கம்:\n{explanation}")
+                active_questions.pop(qid, None)
+                return
+    await message.reply("⏭ தற்போது எதுவும் கேள்வி இல்லை.")
 
 @bot.on_message(filters.command("end") & filters.group)
 async def end_game(_, message):
     chat_id = message.chat.id
-    if chat_id in ended_games:
-        await message.reply("🛑 விளையாட்டு ஏற்கனவே நிறுத்தப்பட்டுள்ளது.")
-        return
-    ended_games.add(chat_id)
-    to_remove = [qid for qid, qdata in active_questions.items() if qdata.get("chat_id") == chat_id]
-    for qid in to_remove:
-        active_questions.pop(qid, None)
-    await message.reply("🛑 விளையாட்டு நிறுத்தப்பட்டது!")
+    async with lock:
+        ended_games.add(chat_id)
+        for qid, qdata in list(active_questions.items()):
+            if qdata.get("chat_id") == chat_id:
+                active_questions.pop(qid, None)
+    await message.reply("🛑 விளையாட்டு நிறுத்தப்பட்டது!.")
 
 @bot.on_callback_query(filters.regex(r"^ans\|"))
-async def check_answer(_, query: CallbackQuery):
+async def check_answer(_, query):
     try:
         _, qid, idx_str = query.data.split("|")
         idx = int(idx_str)
-    except Exception as e:
-        logger.error(f"Callback parse error: {e}")
+    except Exception:
         await query.answer("Invalid data.", show_alert=True)
         return
 
-    qdata = active_questions.get(qid)
-    user_id = query.from_user.id
-    user_name = query.from_user.first_name
+    async with lock:
+        qdata = active_questions.get(qid)
+        if not qdata:
+            await query.answer("இந்த கேள்வி காலாவதியாகிவிட்டது.", show_alert=True)
+            return
 
-    if not qdata:
-        await query.answer("இந்த கேள்வி காலாவதியாகிவிட்டது.", show_alert=True)
-        return
+        user_id = query.from_user.id
+        user_name = query.from_user.first_name
 
-    if qdata.get("closed", False):
-        await query.answer("இந்த கேள்விக்கு பதில் சொல்லப்பட்டுவிட்டது.", show_alert=True)
-        return
+        if qdata.get("closed", False):
+            await query.answer("இந்த கேள்விக்கு பதில் சொல்லப்பட்டுவிட்டது.", show_alert=True)
+            return
 
-    if user_id in qdata.get("answered", set()):
-        await query.answer("நீங்கள் ஏற்கனவே பதில் சொன்னீர்கள்.", show_alert=True)
-        return
+        if user_id in qdata.get("answered", set()):
+            await query.answer("நீங்கள் ஏற்கனவே பதில் சொன்னீர்கள்.", show_alert=True)
+            return
 
-    qdata["answered"].add(user_id)
+        qdata["answered"].add(user_id)
 
-    if idx == qdata["correct_index"]:
-        update_score(user_id, user_name)
-        points = get_score(user_id)
-        await query.answer(f"✅ சரி! {user_name}க்கு {points} புள்ளிகள்", show_alert=True)
-        correct_text = qdata["options"][qdata["correct_index"]]
-        explanation = emoji_meanings.get(qdata.get("emoji_clue", ""), "விளக்கம் கிடைக்கவில்லை.")
-        try:
-            await query.message.edit_text(
-                f"🏆 {user_name} சரியாக கண்டுபிடித்தார்!\n"
-                f"சரியான பதில்: {correct_text}\n\n"
-                f"📖 விளக்கம்:\n{explanation}"
-            )
-        except Exception as e:
-            logger.error(f"Failed to edit message: {e}")
+        if idx == qdata["correct_index"]:
+            update_score(user_id, user_name)
+            points = get_score(user_id)
+            await query.answer(f"✅ சரி! {user_name}க்கு {points} புள்ளிகள்", show_alert=True)
+            correct_text = qdata["options"][qdata["correct_index"]]
+            explanation = emoji_meanings.get(qdata.get("emoji_clue", ""), "விளக்கம் கிடைக்கவில்லை.")
 
-        qdata["closed"] = True
-        active_questions.pop(qid, None)
-    else:
-        await query.answer("❌ தவறு!", show_alert=True)
+            # Edit message with answer
+            try:
+                await query.message.edit_text(
+                    f"🏆 {user_name} சரியாக கண்டுபிடித்தார்!\nசரியான பதில்: {correct_text}\n\n📖 விளக்கம்:\n{explanation}"
+                )
+            except Exception as e:
+                print(f"Failed to edit message: {e}")
 
-@bot.on_message(filters.command("restart") & filters.user(OWNER_USER_ID))
-async def restart_game(_, message):
-    ended_games.clear()
-    active_questions.clear()
-    await message.reply("♻️ விளையாட்டு மீண்டும் துவங்கியது!")
+            qdata["closed"] = True
+            # Remove question after short delay to allow others to see result
+            active_questions.pop(qid, None)
+        else:
+            await query.answer("❌ தவறு!", show_alert=True)
 
-# --- Run bot ---
-if __name__ == "__main__":
-    logger.info("Bot started...")
-    bot.run()
+bot.run()
