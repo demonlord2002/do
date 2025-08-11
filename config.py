@@ -12,5 +12,5 @@ DB_NAME = os.getenv("DB_NAME", "emoji_game")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "scores")
 
 # ==== LINKS ====
-OWNER_LINK = os.getenv("OWNER_LINK", "https://t.me/TheAnonymous_II")
+OWNER_USER_ID = 8370703281
 CHANNEL_LINK = os.getenv("CHANNEL_LINK", "https://t.me/FallenAngelsNetwork")
